@@ -13,6 +13,7 @@ include("components/ClimateCO2CycleComponent.jl")
 include("components/ClimateCH4CycleComponent.jl")
 include("components/ClimateN2OCycleComponent.jl")
 include("components/ClimateSF6CycleComponent.jl")
+include("components/ClimateSO2CycleComponent.jl")
 include("components/ClimateForcingComponent.jl")
 include("components/ClimateDynamicsComponent.jl")
 include("components/BioDiversityComponent.jl")
@@ -83,6 +84,7 @@ function getfund(; nsteps = default_nsteps, datadir = default_datadir, params = 
     add_comp!(FUND, climatech4cycle, :climatech4cycle)
     add_comp!(FUND, climaten2ocycle, :climaten2ocycle)
     add_comp!(FUND, climatesf6cycle, :climatesf6cycle)
+    add_comp!(FUND, climateso2cycle, :climateso2cycle)
     add_comp!(FUND, climateforcing, :climateforcing)
     add_comp!(FUND, climatedynamics, :climatedynamics)
     add_comp!(FUND, biodiversity, :biodiversity)
@@ -130,6 +132,7 @@ function getfund(; nsteps = default_nsteps, datadir = default_datadir, params = 
     connect_param!(FUND, :emissions, :forestemm, :scenariouncertainty, :forestemm, offset = 0)
     connect_param!(FUND, :emissions, :aeei, :scenariouncertainty, :aeei, offset = 0)
     connect_param!(FUND, :emissions, :acei, :scenariouncertainty, :acei, offset = 0)
+    connect_param!(FUND, :emissions, :pgrowth, :scenariouncertainty, :pgrowth)
     connect_param!(FUND, :emissions, :ypcgrowth, :scenariouncertainty, :ypcgrowth, offset = 0)
 
     connect_param!(FUND, :climateco2cycle, :mco2, :emissions, :mco2, offset = 0)
@@ -142,10 +145,13 @@ function getfund(; nsteps = default_nsteps, datadir = default_datadir, params = 
 
     connect_param!(FUND, :climatesf6cycle, :globsf6, :emissions, :globsf6, offset = 0)
 
+    connect_param!(FUND, :climateso2cycle, :globso2, :emissions, :globso2, offset = 0)
+
     connect_param!(FUND, :climateforcing, :acco2, :climateco2cycle, :acco2, offset = 0)
     connect_param!(FUND, :climateforcing, :acch4, :climatech4cycle, :acch4, offset = 0)
     connect_param!(FUND, :climateforcing, :acn2o, :climaten2ocycle, :acn2o, offset = 0)
     connect_param!(FUND, :climateforcing, :acsf6, :climatesf6cycle, :acsf6, offset = 0)
+    connect_param!(FUND, :climateforcing, :acso2, :climateso2cycle, :acso2, offset = 0)
 
     connect_param!(FUND, :climatedynamics, :radforc, :climateforcing, :radforc, offset = 0)
 
