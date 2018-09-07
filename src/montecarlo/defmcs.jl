@@ -159,6 +159,9 @@ mcs = @defmcs begin
     lifen2o = TriangularDist(100.0, 170.0, 114.0)
     lifesea = TriangularDist(250.0, 1000.0, 500.0)
     lifesf6 = TriangularDist(1600.0, 4800.0, 3200.0)
+    lifetempconst = Normal(-31.8978379263215, 0.12072054186561)
+    lifetemplin = Normal(32.7266970287432, 0.0256648976380545)
+    lifetempqd = Normal(-0.00993, 0.001568)
     malch = ["USA" => Truncated(Normal(0.0794,0.0575), 0.0, Inf), "CAN" => Truncated(Normal(0.0794,0.0575), 0.0, Inf), "WEU" => Truncated(Normal(0.0794,0.0575), 0.0, Inf), "JPK" => Truncated(Normal(0.0794,0.0575), 0.0, Inf), "ANZ" => Truncated(Normal(0.0794,0.0575), 0.0, Inf), "EEU" => Truncated(Normal(0.0794,0.0575), 0.0, Inf), "FSU" => Truncated(Normal(0.0794,0.0575), 0.0, Inf), "MDE" => Truncated(Normal(0.0794,0.0575), 0.0, Inf), "CAM" => Truncated(Normal(0.0794,0.0575), 0.0, Inf), "LAM" => Truncated(Normal(0.0794,0.0575), 0.0, Inf), "SAS" => Truncated(Normal(0.0794,0.0575), 0.0, Inf), "SEA" => Truncated(Normal(0.0794,0.0575), 0.0, Inf), "CHI" => Truncated(Normal(0.0794,0.0575), 0.0, Inf), "MAF" => Truncated(Normal(0.0794,0.0575), 0.0, Inf), "SSA" => Truncated(Normal(0.0794,0.0575), 0.0, Inf), "SIS" => Truncated(Normal(0.0794,0.0575), 0.0, Inf)]
     malnl = Truncated(Normal(1.0,0.5), 0.0, Inf)
     maxcardvasc = Truncated(Normal(0.05,0.02), 0.0, Inf)
