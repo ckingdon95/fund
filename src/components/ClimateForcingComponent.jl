@@ -33,6 +33,15 @@ end
     # Pre-industrial atmospheric SF6 concentration
     sf6pre = Parameter(default = 0.04)
 
+    # Atmospheric SO2 concentration
+    acso2 = Parameter(index=[time])
+
+    # Direct radiative forcing by sulphate aerosols
+    so2dir = Parameter(default = 0.03)
+
+    # Indirect radiative forcing by sulphate aerosols
+    so2ind = Parameter(default = 0.08) 
+
     # Radiative forcing from CO2
     rfco2 = Variable(index=[time])
 
@@ -46,7 +55,7 @@ end
     rfsf6 = Variable(index=[time])
 
     # Radiative forcing from SO2
-    rfso2 = Parameter(index=[time])
+    rfso2 = Variable(index=[time])
 
     # Radiative forcing
     radforc = Variable(index=[time])
@@ -67,7 +76,9 @@ end
 
             v.rfsf6[t] = 0.00052 * (p.acsf6[t] - p.sf6pre)
 
-            v.radforc[t] = v.rfco2[t] + v.rfch4[t] + v.rfn2o[t] + v.rfsf6[t] + p.rfso2[t]
+            v.rfso2[t] = p.so2dir * p.acso2[t] / 14.6 + p.so2ind * log(1.0 + p.acso2[t] / 34.4) / log(1 + 14.6 / 34.4) - 0.9
+
+            v.radforc[t] = v.rfco2[t] + v.rfch4[t] + v.rfn2o[t] + v.rfsf6[t] - v.rfso2[t] # this change is the bug (minus instead of plus sign)
 
             v.rfemf22[t] = v.rfco2[t] + v.rfch4[t] + v.rfn2o[t]
         end

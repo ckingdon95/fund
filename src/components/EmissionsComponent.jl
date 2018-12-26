@@ -12,6 +12,8 @@
     emissint = Variable(index=[time,regions])
     emission = Variable(index=[time,regions])
     emissionwithforestry = Variable(index=[time,regions])
+    so2WithSeeiAndScei = Variable(index=[time, regions])
+    so2 = Variable(index=[time, regions])
     sf6 = Variable(index=[time,regions])
     reei = Variable(index=[time,regions])
     rcei = Variable(index=[time,regions])
@@ -35,11 +37,13 @@
     globch4 = Variable(index=[time])
     globn2o = Variable(index=[time])
     globsf6 = Variable(index=[time])
+    globso2 = Variable(index=[time])
 
     cumglobco2 = Variable(index=[time])
     cumglobch4 = Variable(index=[time])
     cumglobn2o = Variable(index=[time])
     cumglobsf6 = Variable(index=[time])
+    cumglobso2 = Variable(index=[time])
 
     taxmp = Parameter(index=[regions])
     sf60 = Parameter(index=[regions])
@@ -50,6 +54,7 @@
     n2opar1 = Parameter(index=[regions])
     n2opar2 = Parameter(index=[regions])
     emissint0 = Parameter(index=[regions])
+    so20 = Parameter(index=[regions])
 
     forestemm = Parameter(index=[time,regions])
     aeei = Parameter(index=[time,regions])
@@ -59,11 +64,14 @@
     currtax = Parameter(index=[time,regions])   
     currtaxch4 = Parameter(index=[time,regions])
     currtaxn2o = Parameter(index=[time,regions])
-#    pgrowth = Parameter(index=[time,regions])
+    pgrowth = Parameter(index=[time,regions])
     ypcgrowth = Parameter(index=[time,regions])
     income = Parameter(index=[time,regions])
     population = Parameter(index=[time,regions])
 
+    so2pop = Parameter(default = 0.33)
+    so2inc = Parameter(default = -0.45)
+    so2carb = Parameter(default = 1.02)
     sf6gdp = Parameter(default = 0.00022628870292887)
     sf6ypc = Parameter(default = -2.46698744769874e-6)
     knowpar = Parameter(default = 0.9)
@@ -88,6 +96,7 @@
                 v.energint[t, r] = 1
                 v.energuse[t, r] = p.income[t,r]
                 v.emissint[t, r] = p.emissint0[r]
+                v.so2[t, r] = p.so20[r]
                 v.emission[t, r] = v.emissint[t, r] / v.energuse[t, r]
                 v.ch4cost[t, r] = 0
                 v.n2ocost[t, r] = 0
@@ -113,6 +122,7 @@
             v.cumglobch4[t] = 0.0
             v.cumglobn2o[t] = 0.0
             v.cumglobsf6[t] = 0.0
+            v.cumglobso2[t] = 0.0
 
             # SocioEconomicState.minint[t]=Inf
             minint = Inf
@@ -128,6 +138,15 @@
             for r in d.regions
                 v.energint[t, r] = (1.0 - 0.01 * p.aeei[t, r] - v.reei[t - 1, r]) * v.energint[t - 1, r]
                 v.emissint[t, r] = (1.0 - 0.01 * p.acei[t, r] - v.rcei[t - 1, r]) * v.emissint[t - 1, r]
+            end
+
+            # Calculate so2 emissions
+            for r in d.regions
+                v.so2[t, r] = v.so2[t - 1, r] * 
+                                (1 + 0.01 * p.pgrowth[t - 1, r]) ^ (p.so2pop) * 
+                                (1 + 0.01 * p.ypcgrowth[t - 1, r]) ^ (p.so2inc) * 
+                                (1 - 0.01 * p.aeei[t, r] - v.reei[t - 1, r] - 0.01 * p.acei[t, r] - v.rcei[t - 1, r]) ^ (p.so2carb)
+                v.so2WithSeeiAndScei[t, r] = v.so2[t, r] * (1 - v.seei[t - 1, r] - v.scei[t - 1, r])
             end
 
             # Calculate sf6 emissions
@@ -291,23 +310,27 @@
             globch4 = 0.
             globn2o = 0.
             globsf6 = 0.
+            globso2 = 34.4
 
             for r in d.regions
                 globco2 = globco2 + v.emissionwithforestry[t, r]
                 globch4 = globch4 + v.ch4[t, r]
                 globn2o = globn2o + v.n2o[t, r]
                 globsf6 = globsf6 + v.sf6[t, r]
+                globso2 = globso2 + v.so2WithSeeiAndScei[t, r]
             end
 
             v.mco2[t] = globco2
             v.globch4[t] = max(0.0, globch4 + (gettime(t) > 2000 ? p.ch4add * (gettime(t) - 2000) : 0.0))
             v.globn2o[t] = max(0.0, globn2o + (gettime(t) > 2000 ? p.n2oadd * (gettime(t) - 2000) : 0.0))
             v.globsf6[t] = max(0.0, globsf6 + (gettime(t) > 2000 ? p.sf6add * (gettime(t) - 2000) : 0.0))
+            v.globso2[t] = globso2
 
             v.cumglobco2[t] = v.cumglobco2[t - 1] + v.mco2[t]
             v.cumglobch4[t] = v.cumglobch4[t - 1] + v.globch4[t]
             v.cumglobn2o[t] = v.cumglobn2o[t - 1] + v.globn2o[t]
             v.cumglobsf6[t] = v.cumglobsf6[t - 1] + v.globsf6[t]
+            v.cumglobso2[t] = v.cumglobso2[t - 1] + v.globso2[t]
         end
     end
 end

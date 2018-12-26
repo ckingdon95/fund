@@ -14,6 +14,7 @@ include("components/ClimateCO2CycleComponent.jl")
 include("components/ClimateCH4CycleComponent.jl")
 include("components/ClimateN2OCycleComponent.jl")
 include("components/ClimateSF6CycleComponent.jl")
+include("components/ClimateSO2CycleComponent.jl")
 include("components/ClimateForcingComponent.jl")
 include("components/ClimateDynamicsComponent.jl")
 include("components/BioDiversityComponent.jl")
@@ -78,6 +79,7 @@ function getfund(; nsteps = default_nsteps, datadir = default_datadir, params = 
     add_comp!(m, climatech4cycle)
     add_comp!(m, climaten2ocycle)
     add_comp!(m, climatesf6cycle)
+    add_comp!(m, climateso2cycle)
     add_comp!(m, climateforcing)
     add_comp!(m, climatedynamics)
     add_comp!(m, biodiversity)
@@ -125,6 +127,7 @@ function getfund(; nsteps = default_nsteps, datadir = default_datadir, params = 
     connect_param!(m, :emissions, :forestemm, :scenariouncertainty, :forestemm)
     connect_param!(m, :emissions, :aeei, :scenariouncertainty, :aeei)
     connect_param!(m, :emissions, :acei, :scenariouncertainty, :acei)
+    connect_param!(m, :emissions, :pgrowth, :scenariouncertainty, :pgrowth)
     connect_param!(m, :emissions, :ypcgrowth, :scenariouncertainty, :ypcgrowth)
 
     connect_param!(m, :climateco2cycle, :mco2, :emissions, :mco2)
@@ -137,10 +140,13 @@ function getfund(; nsteps = default_nsteps, datadir = default_datadir, params = 
 
     connect_param!(m, :climatesf6cycle, :globsf6, :emissions, :globsf6)
 
+    connect_param!(m, :climateso2cycle, :globso2, :emissions, :globso2)
+
     connect_param!(m, :climateforcing, :acco2, :climateco2cycle, :acco2)
     connect_param!(m, :climateforcing, :acch4, :climatech4cycle, :acch4)
     connect_param!(m, :climateforcing, :acn2o, :climaten2ocycle, :acn2o)
     connect_param!(m, :climateforcing, :acsf6, :climatesf6cycle, :acsf6)
+    connect_param!(m, :climateforcing, :acso2, :climateso2cycle, :acso2)
 
     connect_param!(m, :climatedynamics, :radforc, :climateforcing, :radforc)
 
