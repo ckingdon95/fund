@@ -64,8 +64,8 @@ function perturb_marginal_emissions!(m::Model, emissionyear; comp_name = :margin
 
     ci = compinstance(m, comp_name)
     emissions = Mimi.get_param_value(ci, :add)
-    emissions[:] = 0
-    emissions[getindexfromyear(emissionyear):getindexfromyear(emissionyear) + 9] = 1.0
+    emissions[:] .= 0
+    emissions[getindexfromyear(emissionyear)-1:getindexfromyear(emissionyear) + 8] .= 1.0
 
 end
 
